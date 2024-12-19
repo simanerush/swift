@@ -186,7 +186,8 @@ extension ASTGenVisitor {
         return handle(self.generateUnavailableFromAsyncAttr(attribute: node)?.asDeclAttribute)
 
       // Simple attributes.
-      case .addressableSelf,
+      case .memberwiseExcluded,
+        .addressableSelf,
         .alwaysEmitConformanceMetadata,
         .alwaysEmitIntoClient,
         .atReasync,

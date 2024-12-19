@@ -7760,6 +7760,9 @@ bool VarDecl::isMemberwiseInitialized(bool preferDeclaredProperties) const {
   if (!getDeclContext()->isTypeContext() || isStatic())
     return false;
 
+  if (getAttrs().hasAttribute<MemberwiseExcludedAttr>())
+    return false;
+
   // If this is a stored property, and not a backing property in a case where
   // we only want to see the declared properties, it can be memberwise
   // initialized.

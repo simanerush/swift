@@ -3790,6 +3790,7 @@ public:
   TRIVIAL_ATTR_PRINTER(LexicalLifetimes, lexical_lifetimes)
   TRIVIAL_ATTR_PRINTER(MainType, main_type)
   TRIVIAL_ATTR_PRINTER(Marker, marker)
+  TRIVIAL_ATTR_PRINTER(MemberwiseExcluded, _memberwiseInitIgnored)
   TRIVIAL_ATTR_PRINTER(MoveOnly, move_only)
   TRIVIAL_ATTR_PRINTER(Mutating, mutating)
   TRIVIAL_ATTR_PRINTER(NSApplicationMain, ns_application_main)

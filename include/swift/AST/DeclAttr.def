@@ -517,7 +517,11 @@ SIMPLE_DECL_ATTR(_addressableSelf, AddressableSelf,
   OnAccessor | OnConstructor | OnFunc | OnSubscript | ABIBreakingToAdd | ABIStableToRemove | APIBreakingToAdd | APIStableToRemove | UserInaccessible,
   162)
 
-LAST_DECL_ATTR(AddressableSelf)
+SIMPLE_DECL_ATTR(_memberwiseInitIgnored, MemberwiseExcluded,
+  OnVar | ABIBreakingToAdd | ABIBreakingToRemove | APIBreakingToAdd | APIStableToRemove,
+  163)
+
+LAST_DECL_ATTR(MemberwiseExcluded)
 
 #undef DECL_ATTR_ALIAS
 #undef CONTEXTUAL_DECL_ATTR_ALIAS

@@ -389,6 +389,7 @@ public:
   void visitUnsafeAttr(UnsafeAttr *attr);
   void visitLifetimeAttr(LifetimeAttr *attr);
   void visitAddressableSelfAttr(AddressableSelfAttr *attr);
+  void visitMemberwiseExcludedAttr(MemberwiseExcludedAttr *attr);
 };
 
 } // end anonymous namespace
@@ -7777,6 +7778,8 @@ void AttributeChecker::visitAddressableSelfAttr(AddressableSelfAttr *attr) {
     Ctx.Diags.diagnose(attr->getLocation(), diag::addressableSelf_not_on_method);
   }
 }
+
+void AttributeChecker::visitMemberwiseExcludedAttr(MemberwiseExcludedAttr *attr) {}
 
 namespace {
 

@@ -1736,6 +1736,7 @@ namespace  {
     UNINTERESTING_ATTR(PreInverseGenerics)
     UNINTERESTING_ATTR(Lifetime)
     UNINTERESTING_ATTR(AddressableSelf)
+    UNINTERESTING_ATTR(MemberwiseExcluded)
 #undef UNINTERESTING_ATTR
 
     void visitAvailableAttr(AvailableAttr *attr) {
