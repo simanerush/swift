@@ -452,44 +452,6 @@ static ValidationInfo validateControlBlock(
     case control_block::REVISION: {
       revisionSeen = true;
 
-      // Tagged compilers should only load modules if they were
-      // produced by the exact same compiler tag.
-
-      // Disable this restriction for compiler testing by setting this
-      // env var to any value.
-      static const char* ignoreRevision =
-        ::getenv("SWIFT_IGNORE_SWIFTMODULE_REVISION");
-      if (ignoreRevision)
-        break;
-
-      // Override this env var for testing, forcing the behavior of a tagged
-      // compiler and using the env var value to override this compiler's
-      // revision.
-      static const char* forcedDebugRevision =
-        ::getenv("SWIFT_DEBUG_FORCE_SWIFTMODULE_REVISION");
-
-      StringRef moduleRevision = blobData;
-      StringRef serializationTag =
-          version::getCurrentCompilerSerializationTag();
-      if (forcedDebugRevision ||
-          (requiresRevisionMatch && !serializationTag.empty())) {
-        StringRef compilerRevision =
-            forcedDebugRevision ? forcedDebugRevision : serializationTag;
-        if (moduleRevision != compilerRevision) {
-          // The module versions are mismatching, record it and diagnose later.
-          result.problematicRevision = moduleRevision;
-
-          // Reject the module only it still mismatches without the last digit.
-          StringRef compilerRevisionHead = compilerRevision.rsplit('.').first;
-          StringRef moduleRevisionHead = moduleRevision.rsplit('.').first;
-          if (moduleRevisionHead != compilerRevisionHead) {
-            result.status = Status::RevisionIncompatible;
-
-            // We can't trust the module format at this point.
-            return result;
-          }
-        }
-      }
       break;
     }
     case control_block::CHANNEL: {
