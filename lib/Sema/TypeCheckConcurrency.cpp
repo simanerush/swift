@@ -9197,11 +9197,6 @@ RawConformanceIsolationRequest::evaluate(
     return ActorIsolation::forGlobalActor(globalActorType);
   }
 
-  // If the protocol itself is isolated, don't infer isolation for the
-  // conformance.
-  if (getActorIsolation(proto).isActorIsolated())
-    return ActorIsolation::forNonisolated(false);
-
   // SendableMetatype disables isolation inference.
   auto sendableMetatypeProto =
       ctx.getProtocol(KnownProtocolKind::SendableMetatype);
