@@ -2052,10 +2052,8 @@ static bool ParseLangArgs(LangOptions &Opts, ArgList &Args,
     Opts.DefaultIsolationBehavior = DefaultIsolation::Nonisolated;
   }
 
-  if (Opts.DefaultIsolationBehavior == DefaultIsolation::MainActor) {
-    Opts.enableFeature(Feature::InferIsolatedConformances);
-    Opts.enableFeature(Feature::NoExplicitNonIsolated);
-  }
+  Opts.enableFeature(Feature::InferIsolatedConformances);
+  Opts.enableFeature(Feature::NoExplicitNonIsolated);
 
   if (FrontendOpts.ImportHeaderAsInternal)
     Opts.enableFeature(Feature::CheckImplementationOnly);
