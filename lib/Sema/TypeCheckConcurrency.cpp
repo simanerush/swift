@@ -9362,18 +9362,6 @@ RawConformanceIsolationRequest::evaluate(
     return ActorIsolation::forGlobalActor(globalActorType);
   }
 
-  // If the protocol itself is isolated, let's check if all of it's requirements
-  // are as well, and mark the conformance as `nonisolated` if so because it's
-  // safe to pass it around.
-  if (getActorIsolation(proto).isActorIsolated()) {
-    if (llvm::all_of(proto->getProtocolRequirements(), [](auto *req) {
-          if (isa<TypeDecl>(req))
-            return true;
-          return getActorIsolation(req).isActorIsolated();
-        }))
-      return ActorIsolation::forNonisolated(/*unsafe=*/false);
-  }
-
   // SendableMetatype disables isolation inference.
   auto sendableMetatypeProto =
       ctx.getProtocol(KnownProtocolKind::SendableMetatype);
@@ -9460,6 +9448,20 @@ ActorIsolation swift::inferConformanceIsolation(
     auto isolation = assocConf->getIsolation();
     if (isolation.isGlobalActor())
       return isolation;
+  }
+
+  // At this point we know that none of the associated conformances are isolated
+  // so this one could be isolated or not.
+
+  // If the protocol is isolated and all of it's requirements are as well the
+  // conformance doesn't have to be isolated.
+  if (getActorIsolation(protocol).isActorIsolated()) {
+    if (llvm::all_of(protocol->getProtocolRequirements(), [](auto *req) {
+          if (isa<TypeDecl>(req))
+            return true;
+          return getActorIsolation(req).isActorIsolated();
+        }))
+      return ActorIsolation::forNonisolated(/*unsafe=*/false);
   }
 
   bool anyIsolatedWitness = false;
