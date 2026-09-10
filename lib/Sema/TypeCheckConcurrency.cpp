@@ -5575,6 +5575,10 @@ getIsolationFromConformances(NominalTypeDecl *nominal) {
     case ActorIsolation::Nonisolated:
     case ActorIsolation::NonisolatedConcurrent:
       if (inferredIsolation.source.effectivelyExplicit() &&
+          // `NoExplicitNonIsolated` is not applicable here, SE-0449 states that
+          // `nonisolated` on a type or a protocol is always special and used to
+          // break the global actor isolation propagation. The rule doesn't
+          // apply to MainActor-by-default mode.
           getDefaultIsolationForContext(nominal) ==
               DefaultIsolation::Nonisolated) {
         if (!foundIsolation) {
