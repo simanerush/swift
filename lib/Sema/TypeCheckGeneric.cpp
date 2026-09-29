@@ -1108,7 +1108,7 @@ void TypeChecker::diagnoseRequirementFailure(
       auto isolatedConformanceRef = reqFailureInfo.IsolatedConformances.front();
       if (isolatedConformanceRef.isConcrete()) {
         auto isolatedConformance = isolatedConformanceRef.getConcrete();
-        ctx.Diags.diagnose(
+        auto diag = ctx.Diags.diagnose(
             errorLoc, diag::isolated_conformance_with_sendable,
             isolatedConformance->getType(),
             isolatedConformance->getProtocol()->getName(),
@@ -1117,6 +1117,11 @@ void TypeChecker::diagnoseRequirementFailure(
                 KnownProtocolKind::SendableMetatype),
             req.getFirstType(),
             isolatedConformance->getIsolation());
+        // If the conformance's isolation was inferred rather than written,
+        // this is a warning until Swift 6, like
+        // isolated_conformance_wrong_domain.
+        if (!isolatedConformance->getRawIsolation())
+          diag.warnUntilLanguageMode(LanguageMode::v6);
         diagnosticNote = diag::type_does_not_inherit_or_conform_requirement;
         break;
       }

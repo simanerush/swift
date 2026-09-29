@@ -5735,9 +5735,17 @@ static void ensureRequirementsAreSatisfied(ASTContext &ctx,
             QuerySubstitutionMap{substitutions});
     if (isolatedResult.getKind() ==
         CheckRequirementsResult::RequirementFailure) {
+      // Before Swift 6 this is a warning when the isolated conformance's
+      // isolation was inferred (see diagnoseRequirementFailure). Then the
+      // conformance stays valid and the rest of it still gets checked.
+      auto isolatedConformance =
+          isolatedResult.getRequirementFailureInfo().IsolatedConformances.front();
+      bool isWarning = !ctx.isLanguageModeAtLeast(LanguageMode::v6) &&
+                       isolatedConformance.isConcrete() &&
+                       !isolatedConformance.getConcrete()->getRawIsolation();
       if (!conformance->isInvalid()) {
         ctx.addDelayedConformanceDiag(
-            conformance, /*isError=*/true,
+            conformance, /*isError=*/!isWarning,
             [isolatedResult, proto,
              substitutions](NormalProtocolConformance *conformance) {
               TypeChecker::diagnoseRequirementFailure(
@@ -5748,9 +5756,11 @@ static void ensureRequirementsAreSatisfied(ASTContext &ctx,
                        ->castTo<GenericTypeParamType>()},
                   QuerySubstitutionMap{substitutions});
             });
-        conformance->setInvalid();
+        if (!isWarning)
+          conformance->setInvalid();
       }
-      return;
+      if (!isWarning)
+        return;
     }
 
     // Go on to check exportability.

@@ -21,6 +21,7 @@
 #include "swift/AST/ConformanceLookup.h"
 #include "swift/AST/Expr.h"
 #include "swift/AST/ParameterList.h"
+#include "swift/AST/ProtocolConformance.h"
 #include "swift/AST/Type.h"
 #include "swift/AST/Types.h"
 #include "swift/Basic/Assertions.h"
@@ -2917,13 +2918,21 @@ IgnoreIsolatedConformance *
 IgnoreIsolatedConformance::create(ConstraintSystem &cs,
                                   ConstraintLocator *locator,
                                   ProtocolConformance *conformance) {
+  // Using a conformance whose isolation was inferred is a warning before
+  // Swift 6 when it happens in an expression. Witness matching keeps the
+  // error: there it's what rules out a candidate for an isolated conformance.
+  auto fixBehavior = FixBehavior::Error;
+  if (!cs.getASTContext().isLanguageModeAtLeast(LanguageMode::v6) &&
+      !conformance->getRawIsolation() && getAsExpr(locator->getAnchor()))
+    fixBehavior = FixBehavior::DowngradeToWarning;
   return new (cs.getAllocator())
-      IgnoreIsolatedConformance(cs, locator, conformance);
+      IgnoreIsolatedConformance(cs, locator, conformance, fixBehavior);
 }
 
 bool IgnoreIsolatedConformance::diagnose(const Solution &solution,
                                          bool asNote) const {
-  DisallowedIsolatedConformance failure(solution, conformance, getLocator());
+  DisallowedIsolatedConformance failure(solution, conformance, getLocator(),
+                                        fixBehavior);
   return failure.diagnose(asNote);
 }
 

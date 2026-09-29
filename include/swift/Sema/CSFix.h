@@ -4064,8 +4064,10 @@ class IgnoreIsolatedConformance : public ConstraintFix {
 
   IgnoreIsolatedConformance(ConstraintSystem &cs,
                             ConstraintLocator *locator,
-                            ProtocolConformance *conformance)
-      : ConstraintFix(cs, FixKind::IgnoreIsolatedConformance, locator),
+                            ProtocolConformance *conformance,
+                            FixBehavior fixBehavior)
+      : ConstraintFix(cs, FixKind::IgnoreIsolatedConformance, locator,
+                      fixBehavior),
         conformance(conformance) { }
 
 public:

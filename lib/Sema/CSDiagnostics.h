@@ -3479,8 +3479,10 @@ class DisallowedIsolatedConformance final : public FailureDiagnostic {
 public:
   DisallowedIsolatedConformance(const Solution &solution,
                                 ProtocolConformance *conformance,
-                                ConstraintLocator *locator)
-      : FailureDiagnostic(solution, locator), conformance(conformance) {}
+                                ConstraintLocator *locator,
+                                FixBehavior fixBehavior)
+      : FailureDiagnostic(solution, locator, fixBehavior),
+        conformance(conformance) {}
 
   bool diagnoseAsError() override;
 };
