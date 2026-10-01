@@ -5735,14 +5735,13 @@ static void ensureRequirementsAreSatisfied(ASTContext &ctx,
             QuerySubstitutionMap{substitutions});
     if (isolatedResult.getKind() ==
         CheckRequirementsResult::RequirementFailure) {
-      // Before Swift 6 this is a warning when the isolated conformance's
-      // isolation was inferred (see diagnoseRequirementFailure). Then the
-      // conformance stays valid and the rest of it still gets checked.
-      auto isolatedConformance =
-          isolatedResult.getRequirementFailureInfo().IsolatedConformances.front();
+      // Before Swift 6 this is a warning for a concrete isolated conformance
+      // (see diagnoseRequirementFailure). Then the conformance stays valid and
+      // the rest of it still gets checked.
       bool isWarning = !ctx.isLanguageModeAtLeast(LanguageMode::v6) &&
-                       isolatedConformance.isConcrete() &&
-                       !isolatedConformance.getConcrete()->getRawIsolation();
+                       isolatedResult.getRequirementFailureInfo()
+                           .IsolatedConformances.front()
+                           .isConcrete();
       if (!conformance->isInvalid()) {
         ctx.addDelayedConformanceDiag(
             conformance, /*isError=*/!isWarning,

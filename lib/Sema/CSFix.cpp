@@ -2918,12 +2918,13 @@ IgnoreIsolatedConformance *
 IgnoreIsolatedConformance::create(ConstraintSystem &cs,
                                   ConstraintLocator *locator,
                                   ProtocolConformance *conformance) {
-  // Using a conformance whose isolation was inferred is a warning before
-  // Swift 6 when it happens in an expression. Witness matching keeps the
-  // error: there it's what rules out a candidate for an isolated conformance.
+  // Using an isolated conformance is a warning before Swift 6 when it happens
+  // in an expression (see diagnoseRequirementFailure for why this isn't limited
+  // to inferred isolation). Witness matching keeps the error: there it's what
+  // rules out a candidate for an isolated conformance.
   auto fixBehavior = FixBehavior::Error;
   if (!cs.getASTContext().isLanguageModeAtLeast(LanguageMode::v6) &&
-      !conformance->getRawIsolation() && getAsExpr(locator->getAnchor()))
+      getAsExpr(locator->getAnchor()))
     fixBehavior = FixBehavior::DowngradeToWarning;
   return new (cs.getAllocator())
       IgnoreIsolatedConformance(cs, locator, conformance, fixBehavior);
